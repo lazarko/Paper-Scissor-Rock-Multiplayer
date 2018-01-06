@@ -17,7 +17,8 @@ public class Client {
     private final List<String> list = new ArrayList<>();
     List<String> msgBox = new ArrayList<>();
     private int SCORE;
-   
+    private final static String WRONG_MSG = "Invalid argument. Commands availaible: ";
+    private final static String COMMANDS = "Connect, Quit, Rock, Scissor, Paper";
 
     public static void main(String[] args) {
         Client client = new Client();
@@ -30,10 +31,6 @@ public class Client {
             boolean write = true;
             while (write) {
                 String in = sc.nextLine();
-                if (in.equalsIgnoreCase(Logic.SCISSOR_STR) || in.equalsIgnoreCase(Logic.ROCK_STR)
-                        || in.equalsIgnoreCase(Logic.PAPER_STR)) {
-                    list.add(in);
-                }
                 if (in.equalsIgnoreCase("CONNECT")) {
                     //CONNECT
                     CompletableFuture.runAsync(() -> {
@@ -44,7 +41,14 @@ public class Client {
                     write = false;
                     serverConn.disconnect();
                 } else {
-                    CompletableFuture.runAsync(() -> serverConn.sendMsg(in));
+                    if (in.equalsIgnoreCase(Logic.SCISSOR_STR) || in.equalsIgnoreCase(Logic.ROCK_STR)
+                            || in.equalsIgnoreCase(Logic.PAPER_STR)) {
+                        list.add(in);
+                        CompletableFuture.runAsync(() -> serverConn.sendMsg(in));
+                    } else {
+                        new Thread(() -> System.out.println(WRONG_MSG + "" + COMMANDS)).start();
+                    }
+
                 }
             }
         }).start();
@@ -54,7 +58,6 @@ public class Client {
     private class Output implements BroadcastHandler {
 
         private String guess;
-       
 
         @Override
         public void receiveMsg(String msg) {
@@ -80,17 +83,18 @@ public class Client {
             }
 
         }
-        private void setScore(String res){
-            if(res.equalsIgnoreCase(Logic.WIN_MSG)){
-                printMsg(SCORE++, res);            
-            }else{
-                 printMsg(SCORE, res);
+
+        private void setScore(String res) {
+            if (res.equalsIgnoreCase(Logic.WIN_MSG)) {
+                printMsg(SCORE++, res);
+            } else {
+                printMsg(SCORE, res);
             }
         }
-        
-        private void printMsg(int score, String msg){
+
+        private void printMsg(int score, String msg) {
             new Thread(() -> {
-                System.out.println("COMMENT: " + msg + "\n SCORE: " + score);               
+                System.out.println("COMMENT: " + msg + "\n SCORE: " + score);
             }).start();
         }
     }
