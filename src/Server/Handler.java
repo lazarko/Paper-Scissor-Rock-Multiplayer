@@ -51,6 +51,8 @@ public class Handler implements Runnable {
 
             } catch (IOException ex) {
                 Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, ex);
+            }catch(NullPointerException e){
+                System.out.println("Connection with client broken");
             }
         }
     }
@@ -61,12 +63,14 @@ public class Handler implements Runnable {
     }
 
     private void disconnect() {
-        server.removeClient(this);
+        
         try {
             socket.close();
         } catch (IOException ex) {
             Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, ex);
         }
+        System.out.println("Client has disconnected");
+        server.removeClient(this);
         isConnected = false;
     }
 }

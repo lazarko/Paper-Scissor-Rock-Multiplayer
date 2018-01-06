@@ -47,6 +47,7 @@ public class Client {
                         CompletableFuture.runAsync(() -> serverConn.sendMsg(in));
                     } else {
                         new Thread(() -> System.out.println(WRONG_MSG + "" + COMMANDS)).start();
+                        CompletableFuture.runAsync(() -> serverConn.sendMsg(in));
                     }
 
                 }
